@@ -10,27 +10,28 @@
 
 ## File upload
 
-The file upload accepts a zip file. In that zip file it only accepts 1 pdf.
--> This could be exploited by just renaming files + using null bytes in file names.
+The file upload accepts a `.zip` file. In that zip file it only accepts a single `.pdf` file.
+    -> This could be exploited by just renaming files + using null bytes in file names to ignore file restrictions.
 
 Possible solutions:
-- rev.php%00.pdf
-- rev.phpx00.pdf <- correct
+- `rev.php%00.pdf`
+- `rev.phpx00.pdf` -> correct
 
 Solution:
 ```bash
 zip mal.zip "rev.phpX.pdf"
 ```
 
-Now use `hexedit` on the zip to replace the "X" (x58) in "rev.phpX.pdf" with "00" (x00).
+Now use `hexedit` on the zip to replace the "X" (x58) in `rev.phpX.pdf` with "00" (x00).
 
 Uploading this zip file with the reverse php shell using a nullbyte string to bypass the `.pdf` restriction works.
-Make sure to setup a netcat listener to catch the shell.
+
+(Make sure to setup a netcat listener to catch the shell.)
 ```bash
 nc -lvnp 9001
 ```
 
-User: rektsu
+**User: rektsu**
 
 ## Getting root
 
@@ -51,7 +52,7 @@ To see how this binary works, use the `strings` command to get an insight.
 strings /usr/bin/stock
 ```
 
-Pass: St0ckM4nager
+**Pass: St0ckM4nager**
 
 Now to analyze the binary further, use the `strace` command to follow the binary flow. When prompted for a password, provide the found password as argument and get an interesting return:
 ```bash
@@ -62,7 +63,7 @@ Bingo, find a way to craft a `libcounter.so` file so that it gives a root shell.
 
 ### Malicious file
 
-Ok after researching what exactly a `.so` file is and how it works. We will have to create a C file which then needs to be compiled. Then find a way to execute the `libcounter.so` after the binary is exited. This way we can get a working shell as the root user.
+Ok after researching what exactly a `.so` file is and how it works. We will have to create a `C` file which then needs to be compiled. Then find a way to execute the `libcounter.so` after the binary is exited. This way we can get a working shell as the root user.
 
 Create the file `exploit.c`:
 ```C
